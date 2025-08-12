@@ -222,7 +222,7 @@ MonoBehaviour:
   samplingRate: 512
   accelerometerRange: 0
   gyroscopeRange: 0
-  magnetometerRange: 1
+  magnetometerRange: 2
   enableLowPowerAccel: 0
   enableLowPowerGyro: 0
   enableLowPowerMag: 0
