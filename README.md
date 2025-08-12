@@ -14,6 +14,7 @@ This package expands and fixes a major configuration issue from [shimmering-unit
 - **Real-time Device State Monitoring**: Visual feedback of connection and streaming status
 - **Automatic Recommended Settings**: Device-type specific configurations based on the Shimmer User Guides GSR+ Rev 1.13, Optical Pulse Rev 1.6, and ECG Rev 1.12.
 - **CSV Data Logging**: Store collected sensor data with timestamps in CSV format. Logs can be saved to Unity's [persistent data path](https://docs.unity3d.com/ScriptReference/Application-persistentDataPath.html) or custom OS directory.
+- **Event Tracking Integration**: Add event markers to CSV logs for synchronizing events with sensor data timestamps. Perfect for research applications where user interactions need to be tracked.
 - **Real-time Signal Monitoring**: Live sensor value display in Unity Inspector.
 
 ### Free Implementation of Premium Features
@@ -30,15 +31,20 @@ This package expands and fixes a major configuration issue from [shimmering-unit
         - **Option A**: Enable "Use Default Consensys Settings" to preserve existing device configuration
         - **Option B**: Disable it and select device type (GSR/PPG/ECG) for automatic recommended settings
     - **Enable Data Logging**: 
-        - Click the checkbox to store data to CSV and enter the System path that you would like to store to. By default, data will be stored at Unity persistent data path.
+        - Add `ShimmerDataLogger` component for CSV logging and real-time signal monitoring
+        - Configure logging settings: file path, delimiter, and overwrite behavior
+        - Use `AddEventMarker("EventName")` to mark specific events in your CSV data
 3. **Add Heart Rate Monitoring**: 
    - For ECG: Add `ECGShimmerHeartRateMonitor` component
    - For GSR/PPG: Add `GSRPPGShimmerHeartRateMonitor` component
-5. **Optional Signal Monitoring**: Add `ShimmerDataLogger` for real-time signal display
+5. **Data Logging & Monitoring**: Add `ShimmerDataLogger` for CSV logging and real-time signal visualization
 
 ## Scripts Overview
 - `ShimmerDeviceUnity.cs` Shimmer device controller.
-- `ShimmerDataLogger.cs` Visualizes data for debugging.
+- `ShimmerDataLogger.cs` Visualizes data for debugging and logs to CSV with event tracking.
+    - **CSV Configuration**: Customizable file paths, delimiters (comma, space, semicolon, tab), and overwrite settings
+    - **Event Markers**: Use `AddEventMarker("EventName")` to synchronize events with sensor data timestamps
+    - **Real-time Display**: Monitor live sensor values in Unity Inspector
 - `ECGShimmerHeartRateMonitor.cs` Uses Shimmer's ECGToHRAdaptive for real-time heart rate calculation
     - **Filters**:
         - High-pass filter: 0.05 Hz (diagnostic quality) or 0.5 Hz (stable HR in long sessions)
@@ -62,6 +68,7 @@ public class HeartRateDisplay : MonoBehaviour
 {
     [SerializeField] private ShimmerDeviceUnity shimmerDevice;
     [SerializeField] private ECGShimmerHeartRateMonitor ecgMonitor;
+    [SerializeField] private ShimmerDataLogger dataLogger;
     
     void Start()
     {
@@ -70,6 +77,15 @@ public class HeartRateDisplay : MonoBehaviour
         
         // Connect and start streaming
         shimmerDevice.Connect();
+    }
+    
+    void Update()
+    {
+        // Example: Add event marker when spacebar is pressed
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            dataLogger.AddEventMarker("SpacebarPressed");
+        }
     }
     
     private void OnDataReceived(ShimmerDeviceUnity device, ObjectCluster data)
@@ -122,8 +138,6 @@ public class HeartRateDisplay : MonoBehaviour
   - Low-pass: 1-5 Hz for noise reduction
   - High-pass: 0.5 Hz for baseline drift removal
 
-## Upcoming Features (Work in Progress)
-- **Event Tracking Integration**: Runtime event logging with timestamps for research applications. For example, when user presses a button, that moment is tracked in the csv data log. 
 ## License and Attribution
 
 **If you would like to use this package in your projects or research please acknowledge the original authors by citing this repository.**
