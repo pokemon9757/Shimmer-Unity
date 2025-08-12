@@ -51,7 +51,7 @@ namespace ShimmerDataCollection
         /// <summary>
         /// Gets or sets the device name for this Shimmer device
         /// </summary>
-        public string DevName
+        public string DeviceName
         {
             get => devName;
             set => devName = value;
@@ -180,14 +180,6 @@ namespace ShimmerDataCollection
         #endregion
 
         [SerializeField]
-        [Tooltip("Enable CSV data logging to file")]
-        private bool enableDataLogging = true;
-
-        [SerializeField]
-        [Tooltip("Directory path for CSV log files (leave empty for default persistent data path)")]
-        private string logFileDirectory = "";
-
-        [SerializeField]
         [Tooltip("Event triggered when new sensor data is received from the device")]
         private DataReceivedEvent onDataReceived = new DataReceivedEvent();
         /// <summary>
@@ -198,7 +190,6 @@ namespace ShimmerDataCollection
         // Private members
         private Thread shimmerThread = null;
         private ShimmerBluetooth shimmer;
-        private Logging logging;
 
         /// <summary>
         /// Gets the underlying ShimmerBluetooth instance for direct API access
@@ -210,10 +201,6 @@ namespace ShimmerDataCollection
         /// </summary>
         void Start()
         {
-            // Initialize CSV logging if enabled
-            if (enableDataLogging)
-                InitializeLogging();
-
             // Auto-connect if enabled
             if (autoConnectAndStream)
                 Connect();
@@ -222,37 +209,10 @@ namespace ShimmerDataCollection
 
         void OnApplicationQuit()
         {
-            // Clean up resources on application exit
-            if (logging != null)
-            {
-                logging.CloseFile();
-            }
             Disconnect();
         }
 
-        /// <summary>
-        /// Initializes CSV data logging with appropriate file path
-        /// </summary>
-        private void InitializeLogging()
-        {
-            try
-            {
-                string logDirectory = string.IsNullOrEmpty(logFileDirectory)
-                    ? Application.persistentDataPath
-                    : logFileDirectory;
-
-                string fileName = $"{devName}_shimmer_data.csv";
-                string fullPath = System.IO.Path.Combine(logDirectory, fileName);
-
-                logging = new Logging(fullPath, ",");
-                Debug.Log($"Shimmer CSV logging initialized: {fullPath}");
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"Failed to initialize Shimmer CSV logging: {ex.Message}");
-                enableDataLogging = false;
-            }
-        }
+ 
 
         /// <summary>
         /// Attempts to connect to the Shimmer3 bluetooth device using current configuration
@@ -454,12 +414,6 @@ namespace ShimmerDataCollection
         private void HandleDataPacket(CustomEventArgs eventArgs)
         {
             ObjectCluster objectCluster = (ObjectCluster)eventArgs.getObject();
-
-            // Log data to CSV file if logging is enabled
-            if (enableDataLogging && logging != null)
-            {
-                logging.WriteData(objectCluster);
-            }
 
             // Trigger Unity event on main thread (Unity handles cross-thread calls automatically for UnityEvents)
             OnDataReceived.Invoke(this, objectCluster);

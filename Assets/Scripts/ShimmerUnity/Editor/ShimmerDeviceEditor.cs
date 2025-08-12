@@ -27,8 +27,6 @@ namespace ShimmerDataCollection
         private SerializedProperty enableLowPowerMagProperty;
         private SerializedProperty enableInternalExpPowerProperty;
         private SerializedProperty gsrRangeProperty;
-        private SerializedProperty enableDataLoggingProperty;
-        private SerializedProperty logFileDirectoryProperty;
         private SerializedProperty onDataReceivedProperty;
         private ShimmerConfig.ShimmerDeviceType previousDeviceType;
         private bool previousUseRecommendedSettings;
@@ -135,15 +133,6 @@ namespace ShimmerDataCollection
             }
 
             EditorGUILayout.Space();
-
-            // Draw Data Logging Settings Header
-            EditorGUILayout.LabelField("Data Logging", EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox("Enable this to log sensor data to a CSV file. Will record to Persistent Data Path if left empty", MessageType.Info);
-            EditorGUILayout.PropertyField(enableDataLoggingProperty);
-            EditorGUILayout.PropertyField(logFileDirectoryProperty);
-
-            EditorGUILayout.Space();
-
             // Draw Events Header
             EditorGUILayout.LabelField("Events", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox("This event is triggered when new data is received from the device.", MessageType.Info);
@@ -170,10 +159,7 @@ namespace ShimmerDataCollection
             enableLowPowerMagProperty = serializedObject.FindProperty("enableLowPowerMag");
             enableInternalExpPowerProperty = serializedObject.FindProperty("enableInternalExpPower");
             gsrRangeProperty = serializedObject.FindProperty("gsrRange");
-            enableDataLoggingProperty = serializedObject.FindProperty("enableDataLogging");
-            logFileDirectoryProperty = serializedObject.FindProperty("logFileDirectory");
             onDataReceivedProperty = serializedObject.FindProperty("onDataReceived");
-
             previousDeviceType = (ShimmerConfig.ShimmerDeviceType)deviceTypeProperty.enumValueIndex;
             previousUseRecommendedSettings = useRecommendedSettingsProperty.boolValue;
         }

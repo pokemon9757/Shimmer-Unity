@@ -222,14 +222,12 @@ MonoBehaviour:
   samplingRate: 512
   accelerometerRange: 0
   gyroscopeRange: 0
-  magnetometerRange: 2
+  magnetometerRange: 1
   enableLowPowerAccel: 0
   enableLowPowerGyro: 0
   enableLowPowerMag: 0
   enableInternalExpPower: 1
   gsrRange: 4
-  enableDataLogging: 1
-  logFileDirectory: 
   onDataReceived:
     m_PersistentCalls:
       m_Calls: []
@@ -251,6 +249,11 @@ MonoBehaviour:
     format: 0
     unit: 0
     value: 
+  enableDataLogging: 1
+  logFileDirectory: 
+  fileName: 
+  allowOverwrite: 1
+  delimiter: 1
 --- !u!1 &679560668
 GameObject:
   m_ObjectHideFlags: 0
